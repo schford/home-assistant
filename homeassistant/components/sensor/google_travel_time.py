@@ -6,8 +6,8 @@ https://home-assistant.io/components/sensor.google_travel_time/
 """
 from datetime import datetime
 from datetime import timedelta
+import time
 import logging
-
 import voluptuous as vol
 
 from homeassistant.components.sensor import PLATFORM_SCHEMA
@@ -31,7 +31,7 @@ CONF_TRAVEL_MODE = 'travel_mode'
 
 DEFAULT_NAME = 'Google Travel Time'
 
-MIN_TIME_BETWEEN_UPDATES = timedelta(minutes=5)
+MIN_TIME_BETWEEN_UPDATES = timedelta(minutes=1)
 
 ALL_LANGUAGES = ['ar', 'bg', 'bn', 'ca', 'cs', 'da', 'de', 'el', 'en', 'es',
                  'eu', 'fa', 'fi', 'fr', 'gl', 'gu', 'hi', 'hr', 'hu', 'id',
@@ -128,6 +128,7 @@ class GoogleTravelTimeSensor(Entity):
         self._options = options
         self._unit_of_measurement = 'min'
         self._matrix = None
+        self._directions = None
         self.valid_api_connection = True
 
         # Check if location is a trackable entity
@@ -157,6 +158,9 @@ class GoogleTravelTimeSensor(Entity):
             return None
 
         _data = self._matrix['rows'][0]['elements'][0]
+        _data_dir = self._directions[0]['legs'][0]
+        if 'arrival_time' in _data_dir:
+            return round(int(int(_data_dir['arrival_time']['value']) - int(time.time())) / 60)
         if 'duration_in_traffic' in _data:
             return round(_data['duration_in_traffic']['value']/60)
         if 'duration' in _data:
@@ -178,12 +182,18 @@ class GoogleTravelTimeSensor(Entity):
         res.update(self._options)
         del res['rows']
         _data = self._matrix['rows'][0]['elements'][0]
+        _data_dir = self._directions[0]['legs'][0]
         if 'duration_in_traffic' in _data:
             res['duration_in_traffic'] = _data['duration_in_traffic']['text']
         if 'duration' in _data:
             res['duration'] = _data['duration']['text']
         if 'distance' in _data:
             res['distance'] = _data['distance']['text']
+        if 'arrival_time' in _data_dir:
+            res['arrival_time'] = _data_dir['arrival_time']['text']
+            total = round(int(int(_data_dir['arrival_time']['value']) - int(time.time())) / 60)
+            res['total_time'] = total
+
         return res
 
     @property
@@ -225,6 +235,8 @@ class GoogleTravelTimeSensor(Entity):
 
         if self._destination is not None and self._origin is not None:
             self._matrix = self._client.distance_matrix(
+                self._origin, self._destination, **options_copy)
+            self._directions = self._client.directions(
                 self._origin, self._destination, **options_copy)
 
     def _get_location_from_entity(self, entity_id):
