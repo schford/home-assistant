@@ -41,7 +41,8 @@ SUPPORT_FLAGS = (SUPPORT_TARGET_TEMPERATURE | SUPPORT_OPERATION_MODE |
 
 def setup_platform(hass, config, add_devices, discovery_info=None):
     """Set up the NetAtmo Thermostat."""
-    vaillant = get_component('vaillant')
+    #vaillant = get_component('vaillant')
+    vaillant = hass.components.vaillant
     device = config.get(CONF_RELAY)
 
     import lnetatmo
