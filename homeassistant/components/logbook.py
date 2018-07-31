@@ -83,7 +83,7 @@ def async_log_entry(hass, name, message, domain=None, entity_id=None):
     hass.bus.async_fire(EVENT_LOGBOOK_ENTRY, data)
 
 
-async def setup(hass, config):
+async def async_setup(hass, config):
     """Listen for download events to download files."""
     @callback
     def log_message(service):
@@ -100,7 +100,7 @@ async def setup(hass, config):
     hass.http.register_view(LogbookView(config.get(DOMAIN, {})))
 
     await hass.components.frontend.async_register_built_in_panel(
-        'logbook', 'logbook', 'mdi:format-list-bulleted-type')
+        'logbook', 'logbook', 'hass:format-list-bulleted-type')
 
     hass.services.async_register(
         DOMAIN, 'log', log_message, schema=LOG_MESSAGE_SCHEMA)
@@ -372,7 +372,6 @@ def _exclude_events(events, config):
     return filtered_events
 
 
-# pylint: disable=too-many-return-statements
 def _entry_message_from_state(domain, state):
     """Convert a state to a message for the logbook."""
     # We pass domain in so we don't have to split entity_id again

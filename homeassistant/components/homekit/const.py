@@ -8,11 +8,19 @@ HOMEKIT_NOTIFY_ID = 4663548
 # #### Config ####
 CONF_AUTO_START = 'auto_start'
 CONF_ENTITY_CONFIG = 'entity_config'
+CONF_FEATURE = 'feature'
+CONF_FEATURE_LIST = 'feature_list'
 CONF_FILTER = 'filter'
 
 # #### Config Defaults ####
 DEFAULT_AUTO_START = True
 DEFAULT_PORT = 51827
+
+# #### Features ####
+FEATURE_ON_OFF = 'on_off'
+FEATURE_PLAY_PAUSE = 'play_pause'
+FEATURE_PLAY_STOP = 'play_stop'
+FEATURE_TOGGLE_MUTE = 'toggle_mute'
 
 # #### HomeKit Component Services ####
 SERVICE_HOMEKIT_START = 'start'
@@ -23,9 +31,14 @@ BRIDGE_NAME = 'Home Assistant Bridge'
 BRIDGE_SERIAL_NUMBER = 'homekit.bridge'
 MANUFACTURER = 'Home Assistant'
 
+# #### Switch Types ####
+TYPE_OUTLET = 'outlet'
+TYPE_SWITCH = 'switch'
+
 # #### Services ####
 SERV_ACCESSORY_INFO = 'AccessoryInformation'
 SERV_AIR_QUALITY_SENSOR = 'AirQualitySensor'
+SERV_BATTERY_SERVICE = 'BatteryService'
 SERV_CARBON_DIOXIDE_SENSOR = 'CarbonDioxideSensor'
 SERV_CARBON_MONOXIDE_SENSOR = 'CarbonMonoxideSensor'
 SERV_CONTACT_SENSOR = 'ContactSensor'
@@ -38,6 +51,7 @@ SERV_LIGHTBULB = 'Lightbulb'
 SERV_LOCK = 'LockMechanism'
 SERV_MOTION_SENSOR = 'MotionSensor'
 SERV_OCCUPANCY_SENSOR = 'OccupancySensor'
+SERV_OUTLET = 'Outlet'
 SERV_SECURITY_SYSTEM = 'SecuritySystem'
 SERV_SMOKE_SENSOR = 'SmokeSensor'
 SERV_SWITCH = 'Switch'
@@ -49,11 +63,13 @@ SERV_WINDOW_COVERING = 'WindowCovering'
 CHAR_ACTIVE = 'Active'
 CHAR_AIR_PARTICULATE_DENSITY = 'AirParticulateDensity'
 CHAR_AIR_QUALITY = 'AirQuality'
+CHAR_BATTERY_LEVEL = 'BatteryLevel'
 CHAR_BRIGHTNESS = 'Brightness'
 CHAR_CARBON_DIOXIDE_DETECTED = 'CarbonDioxideDetected'
 CHAR_CARBON_DIOXIDE_LEVEL = 'CarbonDioxideLevel'
 CHAR_CARBON_DIOXIDE_PEAK_LEVEL = 'CarbonDioxidePeakLevel'
 CHAR_CARBON_MONOXIDE_DETECTED = 'CarbonMonoxideDetected'
+CHAR_CHARGING_STATE = 'ChargingState'
 CHAR_COLOR_TEMPERATURE = 'ColorTemperature'
 CHAR_CONTACT_SENSOR_STATE = 'ContactSensorState'
 CHAR_COOLING_THRESHOLD_TEMPERATURE = 'CoolingThresholdTemperature'
@@ -76,12 +92,14 @@ CHAR_MODEL = 'Model'
 CHAR_MOTION_DETECTED = 'MotionDetected'
 CHAR_NAME = 'Name'
 CHAR_OCCUPANCY_DETECTED = 'OccupancyDetected'
+CHAR_OUTLET_IN_USE = 'OutletInUse'
 CHAR_ON = 'On'
 CHAR_POSITION_STATE = 'PositionState'
 CHAR_ROTATION_DIRECTION = 'RotationDirection'
 CHAR_SATURATION = 'Saturation'
 CHAR_SERIAL_NUMBER = 'SerialNumber'
 CHAR_SMOKE_DETECTED = 'SmokeDetected'
+CHAR_STATUS_LOW_BATTERY = 'StatusLowBattery'
 CHAR_SWING_MODE = 'SwingMode'
 CHAR_TARGET_DOOR_STATE = 'TargetDoorState'
 CHAR_TARGET_HEATING_COOLING = 'TargetHeatingCoolingState'

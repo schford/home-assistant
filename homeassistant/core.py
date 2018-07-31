@@ -4,7 +4,7 @@ Core components of Home Assistant.
 Home Assistant is a Home Automation framework for observing the state
 of entities and react to changes.
 """
-# pylint: disable=unused-import, too-many-lines
+# pylint: disable=unused-import
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
 import enum
@@ -17,7 +17,8 @@ import threading
 from time import monotonic
 
 from types import MappingProxyType
-from typing import Optional, Any, Callable, List, TypeVar, Dict  # NOQA
+from typing import (  # NOQA
+    Optional, Any, Callable, List, TypeVar, Dict, Coroutine)
 
 from async_timeout import timeout
 import voluptuous as vol
@@ -105,7 +106,7 @@ class CoreState(enum.Enum):
 
     def __str__(self) -> str:
         """Return the event."""
-        return self.value
+        return self.value  # type: ignore
 
 
 class HomeAssistant(object):
@@ -136,7 +137,7 @@ class HomeAssistant(object):
         # This is a dictionary that any component can store any data on.
         self.data = {}
         self.state = CoreState.not_running
-        self.exit_code = None
+        self.exit_code = 0  # type: int
         self.config_entries = None
 
     @property
@@ -205,8 +206,8 @@ class HomeAssistant(object):
     def async_add_job(
             self,
             target: Callable[..., Any],
-            *args: Any) -> Optional[asyncio.tasks.Task]:
-        """Add a job from within the eventloop.
+            *args: Any) -> Optional[asyncio.Future]:
+        """Add a job from within the event loop.
 
         This method must be run in the event loop.
 
@@ -226,6 +227,36 @@ class HomeAssistant(object):
 
         # If a task is scheduled
         if self._track_task and task is not None:
+            self._pending_tasks.append(task)
+
+        return task
+
+    @callback
+    def async_create_task(self, target: Coroutine) -> asyncio.tasks.Task:
+        """Create a task from within the eventloop.
+
+        This method must be run in the event loop.
+
+        target: target to call.
+        """
+        task = self.loop.create_task(target)  # type: asyncio.tasks.Task
+
+        if self._track_task:
+            self._pending_tasks.append(task)
+
+        return task
+
+    @callback
+    def async_add_executor_job(
+            self,
+            target: Callable[..., Any],
+            *args: Any) -> asyncio.Future:
+        """Add an executor job from within the event loop."""
+        task = self.loop.run_in_executor(
+            None, target, *args)  # type: asyncio.Future
+
+        # If a task is scheduled
+        if self._track_task:
             self._pending_tasks.append(task)
 
         return task
@@ -277,7 +308,7 @@ class HomeAssistant(object):
         """Stop Home Assistant and shuts down all threads."""
         fire_coroutine_threadsafe(self.async_stop(), self.loop)
 
-    async def async_stop(self, exit_code=0) -> None:
+    async def async_stop(self, exit_code: int = 0) -> None:
         """Stop Home Assistant and shuts down all threads.
 
         This method is a coroutine.
